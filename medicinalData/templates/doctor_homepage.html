@@ -1,0 +1,274 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nova Theme</title>' {% load static %}
+    <meta name="Nova theme" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/healtholio_logo.png' %}" />
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}" />
+
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="{% static 'assets/fontawesome-5.12.0/css/all.css' %}">
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+</head>
+
+<body>
+
+    <!-- Navigation
+    ================================================== -->
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="index.html"><img class="logo" src="{% static 'assets/images/healtholio_logo.png' %} " /></a>
+
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" style="color: white;" href="doctor_history.html">Doctor's History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: white" href="doctor_profile.html">Personal Details</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="/logout" style="color: white" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="add-new-details" style="margin-top:1%;float:left;">
+        <div class="container">
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" style="border-radius: 50px; width: 150%;"><i class="fa fa-plus" aria-hidden="true" style = "float:left;"></i><span style = "float:right;">New</span></button>
+            <div class="modal fade" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="text-align: center;">
+
+                        <div class="modal-header" style="background-color: lightblue">
+                            <center>
+                                <h4 class="col-12 modal-title text-center">Add New Prescription</h4>
+                            </center>
+                            <button type="button" class="close" data-dismiss="modal" onclick="HideRecording()">&times;</button>
+                        </div>
+                        <div id="initiate-recording">
+                            <img src="{% static 'assets/images/microphone.png' %}" alt="Mic" style="width: 30px; height:30px;" onclick="ShowRecording()">
+                        </div>
+                        <div class="modal-body" style="display:none; text-align: center; background-color:beige;" id="modal-body">
+                            <div style="border:lightgreen;padding:10px; height:20%">
+                                <span id="final_span" style="padding: 5%"></span>
+                                <span id="interim_span" style="color:grey; padding: 5%"></span>
+                            </div>
+                            <div style="padding: 5%">
+                                <div>
+                                    <i class='far fa-play-circle' style='font-size:50px; margin-right: 10%;background-color: orange;' id="start" onclick="StartRecording()"></i>
+                                    <i class='far fa-stop-circle' style='font-size:50px;background-color: orange;' id="stop" onclick="StopRecording()"></i>
+                                </div>
+                                <br>
+                                <h3>Intermediate Text Recognized</h3>
+                                <br>
+                                <span id="final_text1"></span>
+                            </div>
+                            <div id="final_upload" style="display:none; padding: 5%">
+                                <h3>Final Text</h3>
+                                <form action="/extract" method="post">
+                                    {% csrf_token %}
+                                    <textarea id="final_text2" placeholder="Create a new note by typing or using voice recognition." rows="6" style="width: 100%" name="final_text2"></textarea>
+                                    <br>
+                                    <input type="text" name="pid" id="pid" placeholder="Enter the Patient ID" style="float:left; transform: translate(0,50%);">
+                                    <br>
+                                    <input type="text" name="final_text3" id="final_text3" value="" hidden>
+                                    <div style="transform: translate(0%, 50%)">
+                                        <button class="btn btn-success" id="upload" type="submit" onclick="document.getElementById('final_text3').value = document.getElementById('final_text2').value; console.log(document.getElementById('final_text3').value);">Upload</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style=" background-color:beige;">
+                            <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="HideRecording()">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="patient-details" style="padding:1%">
+        <div class="container">
+            <h1 style="color: black;">Patient Details</h1>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="col s12 m7">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="{% static 'assets/images/bg1.jfif' %}">
+                                <span class="card-title" style="color: white; font-size: 30px;"><strong>Patient Name</strong></span>
+                            </div>
+                            <div class="card-content" style="text-align: left;">
+                                <h4>some name</h4>
+                                <h4>Symptoms: </h4>
+                                <ul style="list-style-type:none; transform: translate(-15%);">
+                                    <li>example 1</li>
+                                    <li>example 2</li>
+                                    <li>example 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="col s12 m7">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="{% static 'assets/images/bg2.jfif' %}">
+                                <span class="card-title" style="color: white; font-size: 30px;"><strong>Patient Name</strong></span>
+                            </div>
+                            <div class="card-content">
+                                <h4>some name</h4>
+                                <h4>Symptoms: </h4>
+                                <ul style="list-style-type:none; transform: translate(-15%);">
+                                    <li>example 1</li>
+                                    <li>example 2</li>
+                                    <li>example 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="col s12 m7">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="{% static 'assets/images/bg3.jfif' %}">
+                                <span class="card-title" style="color: white; font-size: 30px;"><strong>Patient Name</strong></span>
+                            </div>
+                            <div class="card-content">
+                                <h4>some name</h4>
+                                <h4>Symptoms: </h4>
+                                <ul style="list-style-type:none; transform: translate(-15%);">
+                                    <li>example 1</li>
+                                    <li>example 2</li>
+                                    <li>example 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script src="{% static 'assets/js/voice_record.js' %}"></script>
+    <!-- <script>
+        function ShowRecording(){
+            $("#initiate-recording").fadeOut(500);
+            $("#modal-body").fadeIn(500);
+        }
+        function HideRecording(){
+            document.getElementById("note-textarea").value = "";
+            $("#initiate-recording").fadeIn(500);
+            $("#modal-body").fadeOut(500);
+        }
+    </script> -->
+    <script type="text/javascript">
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        var recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        reset();
+        recognition.onend = reset;
+
+        recognition.onresult = function(event) {
+            var final = "";
+            var interim = "";
+            for (var i = 0; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    final += event.results[i][0].transcript;
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+            final_span.innerHTML = final;
+            interim_span.innerHTML = interim;
+        }
+
+        function reset() {
+            recognizing = false;
+            final_span.innerHTML = "";
+            document.getElementById("start").removeAttribute("class");
+            document.getElementById("start").setAttribute("class", "far fa-play-circle");
+        }
+
+        function StartRecording() {
+            if (recognizing) {
+                recognition.stop();
+                if (final_text1.innerHTML == "" && interim_span.innerHTML == "")
+                    final_text1.innerHTML = final_span.innerHTML;
+                else if (final_text1.innerHTML == "" && final_span.innerHTML == "")
+                    final_text1.innerHTML = interim_span.innerHTML;
+                else if (final_text1.innerHTML != "" && final_span.innerHTML == "")
+                    final_text1.innerHTML += " " + interim_span.innerHTML;
+                else
+                    final_text1.innerHTML += " " + final_span.innerHTML;
+                reset();
+            } else {
+                final_span.innerHTML = "";
+                recognition.start();
+                recognizing = true;
+                document.getElementById("start").removeAttribute("class");
+                document.getElementById("start").setAttribute("class", "far fa-pause-circle");
+                final_span.innerHTML = "";
+                interim_span.innerHTML = "";
+            }
+        }
+
+        function StopRecording() {
+            if (document.getElementById("start").getAttribute("class") == "far fa-play-circle") {
+                final_text2.innerHTML = final_text1.innerHTML;
+            } else {
+                reset();
+                final_text2.innerHTML += final_text1.innerHTML + " " + final_span.innerHTML;
+            }
+            $("#final_upload").show();
+            document.getElementById("start").setAttribute("class", "far fa-play-circle");
+        }
+
+        function ShowRecording() {
+            $("#modal-body").fadeIn(500);
+            $("#initiate-recording").fadeOut(500);
+        }
+
+        function HideRecording() {
+            final_span.innerHTML = "";
+            interim_span.innerHTML = "";
+            final_text1.innerHTML = "";
+            final_text2.value = "";
+            final_text3.value = "";
+            $("#initiate-recording").fadeIn(500);
+            $("#modal-body").fadeOut(500);
+            $("#final_upload").fadeOut(500);
+            document.getElementById("start").setAttribute("class", "far fa-play-circle");
+        }
+    </script>
+</body>
+
+</html>
